@@ -1,0 +1,17 @@
+The inputs (train, dev, test) should be in a two-column tab separated format such as the following example. Test file can either be in a two-column format or a single column of just word sequences.
+
+Ms.     NNP
+Haag    NNP
+plays   VBZ
+Elianti NNP
+.       .
+
+Rolls-Royce     NNP
+Motor   NNP
+Cars    NNPS
+Inc.    NNP
+said    VBD
+…
+
+The training terminates and the model is written into the disk if there is no more improvement on the dev set after 5 consecutive iterations.
+The output is in the same format as the inputs.
