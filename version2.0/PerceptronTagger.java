@@ -10,7 +10,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 import java.lang.Integer;
-import tagPack.*;
+import tagpack.*;
 
 public class PerceptronTagger{
 
@@ -53,11 +53,11 @@ public class PerceptronTagger{
 			}
 		}
 		if (mode_flag.equals("train")) {
-			System.out.println("Training phase.");
+			System.err.println("Training phase.");
 			// remove old files mdl_path/dev_outout_* mdl_path/mdl_*.zip
 			// or mkdir mdl_path
-			System.out.println("Removing old model files in "+mdl_path+"...");
-			File file = new File(mdl_path);        
+			System.err.println("Removing old model files in "+mdl_path);
+			File file = new File(mdl_path);
 			String[] myFiles;      
 			if(file.isDirectory()){  
 				myFiles = file.list();  
@@ -68,41 +68,41 @@ public class PerceptronTagger{
 				}  
 			} else {
 				if (file.mkdir()) {
-					System.out.println(mdl_path+" directory is created!");
+					System.err.println(mdl_path+" directory is created!");
 				} else {
-					System.out.println("Failed to create directory "+mdl_path+"!");
+					System.err.println("Failed to create directory "+mdl_path+"!");
 				}
 			}
-			System.out.println("Training the model...");
+			System.err.println("Training the model...");
 			makeDataStructure(train_file);
-			System.out.println("Saving model...");
+			System.err.println("Saving model...");
 			dumpModel(mdl_path,"");
-			System.out.println("Training phase is done!");
+			System.err.println("Training phase is done!");
 		} else if (mode_flag.equals("test")) {
 			/* Calling viterbi function for each sentence of the test set.
 			 * The result is written into "out_name" file.
 			 */
 			try {
-				System.out.println("Test phase.");
-				System.out.println("Removing the old output \""+out_name+"\" ...");
+				System.err.println("Test phase.");
+				System.err.println("Removing the old output \""+out_name+"\" ...");
 				File file = new File(out_name);
 				if(file.delete()){
-					System.out.println(file.getName() + " is deleted!");
+					System.err.println(file.getName() + " is deleted!");
 				}else{
-					System.out.println("No such file exists!");
+					System.err.println("No such file exists!");
 				}
-				System.out.println("Loading model ...");
+				System.err.println("Loading model ...");
 				loadModel(mdl_path,"");
-				System.out.println("Model loaded!");
+				System.err.println("Model loaded!");
 				BufferedReader test_file = new BufferedReader(new FileReader(in_file));
-				System.out.println("Writing the result into the \""+out_name+"\" ...");
+				System.err.println("Writing the result into \""+out_name+"\" ...");
 				String sentence = "";
 				String line = null;
 				boolean only_word = false;
 				while ((line=test_file.readLine()) != null) {
 					if (line.isEmpty()) {
 						Features.viterbi("<s> "+sentence.substring(0,sentence.length()-1)+" </s>", true, out_name, avg_flag);
-						sentence = null;
+						sentence = "";
 					} else {
 						if (line.indexOf("\t") != -1) // test file contains truth tags
 							sentence += line.substring(0,line.indexOf("\t")) + " ";
@@ -113,11 +113,11 @@ public class PerceptronTagger{
 					}
 				}
 				test_file.close();
-				System.out.println("Test phase is done!\n");
+				System.err.println("Test phase is done!\n");
 				if (!only_word) {
 					double test_acc = tagging_accuracy(in_file, out_name);
 					DecimalFormat df = new DecimalFormat("00.00");
-					System.out.println("Tagging accuracy = "+df.format(test_acc*100)+"%");
+					System.err.println("Tagging accuracy = "+df.format(test_acc*100)+"%");
 				}
 			}
 			catch(Exception ex){
@@ -219,7 +219,7 @@ public class PerceptronTagger{
 			out.write(data, 0, data.length);
 			out.closeEntry();
 			out.close();
-			System.out.println("Done");
+			System.err.println("Done");
 		}catch(IOException ex){
 			ex.printStackTrace();
 		}
@@ -374,7 +374,6 @@ public class PerceptronTagger{
 				dummap.put("dummykey", new Integer(-1));
 				Features.maplist.add(f, dummap);
 			}
-			//loadModel("/l2/users/yarmoham/Cluster/project/shards10/ipm", iter+"");
 
 			while (line1 !=null){
 				if (line1.isEmpty()) {
@@ -610,7 +609,7 @@ public class PerceptronTagger{
 		while (t<max_iter) {
 			if (noimprove < 5) {
 				long startTime = System.currentTimeMillis();
-				System.out.println("iteration "+ (t+1));
+				System.err.println("Iteration "+ (t+1));
 				for (int i=0; i<truth_sentences_wt.size(); i++) {
 					String truth = (String)truth_sentences_wt.get(i);
 					String[] truth_wt = truth.split(" ");
@@ -652,10 +651,10 @@ public class PerceptronTagger{
 					}
 				}
 				long estimatedTime = System.currentTimeMillis() - startTime;
-				System.err.println("    time of iteration "+(t+1)+"= "+estimatedTime+" ms");
+				System.err.println("    Time elapsed: "+estimatedTime+" ms");
 
 				double curr_acc = evaluate_dev(count, t);
-				System.out.println("    accuracy of iteration "+ (t+1) +" = "+ curr_acc*100);
+				System.err.println("    Accuracy: "+curr_acc);
 				if (curr_acc > best_acc_so_far) {
 					best_acc_so_far = curr_acc;
 					best_iter_so_far = (t+1);
@@ -663,7 +662,7 @@ public class PerceptronTagger{
 				} else {
 					noimprove++;
 				}
-				System.out.println("Best accuracy so far : iteration "+ best_iter_so_far +", "+ best_acc_so_far);
+				System.err.println("Best accuracy (iteration "+ best_iter_so_far +"): "+ best_acc_so_far);
 				t++;
 			} else 
 				return;
@@ -753,8 +752,8 @@ public class PerceptronTagger{
 				}
 				prevline1 = line1;
 			}
-			//System.out.println("total: "+ total);
-			//System.out.println("difference: "+ difference);
+			//System.err.println("total: "+ total);
+			//System.err.println("difference: "+ difference);
 			accuracy = (total - difference)/total;
 			reader1.close();
 			reader2.close();

@@ -11,7 +11,8 @@ Motor   NNP
 Cars    NNPS
 Inc.    NNP
 said    VBD
-…
+...
 
-The training terminates and the model is written into the disk if there is no more improvement on the dev set after 5 consecutive iterations.
-The output is in the same format as the inputs.
+The training terminates and the model is written into the disk if there is no more
+improvement on the dev set after 5 consecutive iterations. The output is in the same
+format as the input.
